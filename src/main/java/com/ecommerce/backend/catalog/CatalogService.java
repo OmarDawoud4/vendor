@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -36,9 +37,38 @@ public class CatalogService {
                 .map(this::toVariantResponse)
                 .toList();
     }
+// ADMIN
+    public ProductResponse createProdcut(CreateProductRequest request){
+        if (productRepository.existsBySlug(request.getSlug())) {
+            throw new IllegalArgumentException("Slug already in use: " + request.getSlug());
+        }
+        Product product = Product.builder()
+                .name(request.getName())
+                .slug(request.getSlug())
+                .description(request.getDescription())
+                .brand(request.getBrand())
+                .status(Product.ProductStatus.DRAFT)
+                .build();
 
+        return toProductResponse(productRepository.save(product));
+    }
+    public VariantResponse createVariant (UUID productId , CreateVariantRequest request){
+        Product product= productRepository.findById(productId)
+                .orElseThrow(()-> new IllegalArgumentException("Product not found "));
 
-public List<Category>getCategories (){
+        ProductVariant variant = ProductVariant.builder()
+                .product(product)
+                .sku(request.getSku())
+                .priceAmount(request.getPriceAmount())
+                .currency(request.getCurrency())
+                .weightGrams(request.getWeightGrams())
+                .attributesJson(request.getAttributes() != null ? request.getAttributes() : new java.util.HashMap<>())
+                .build();
+
+        return toVariantResponse(variantRepository.save(variant));
+    }
+
+    public List<Category>getCategories (){
         return categoryRepository.findAll() ;
 }
     private ProductResponse toProductResponse(Product product) {
