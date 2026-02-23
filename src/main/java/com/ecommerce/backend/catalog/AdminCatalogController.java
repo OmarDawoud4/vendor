@@ -35,4 +35,16 @@ public class AdminCatalogController {
                 .status(HttpStatus.CREATED)
                 .body(catalogService.createVariant(productId,request));
     }
+    @PutMapping("/products/{productId}/status")
+    public ResponseEntity<ProductResponse> updateStatus(
+            @PathVariable UUID productId,
+            @RequestParam Product.ProductStatus status) {
+        return ResponseEntity.ok(catalogService.updateProductStatus(productId, status));
+    }
+
+    @PostMapping("/categories")
+    public ResponseEntity<Category> createCategory(
+            @Valid @RequestBody CreateCategoryRequest request) {
+        return ResponseEntity.ok(catalogService.createCategory(request));
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -22,15 +23,16 @@ public class CatalogController {
     public ResponseEntity<List<Category>> getCategories (){
         return ResponseEntity.ok(catalogService.getCategories());
     }
+
     @GetMapping("/products")
     public ResponseEntity<Page<ProductResponse>> getProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) String q){
 
-            @RequestParam(defaultValue = "0") int page ,
-            @RequestParam(defaultValue = "20") int size
-    ){
-
-        Pageable pageable = PageRequest.of(page, size , Sort.by("createdAt").descending());
-        return ResponseEntity.ok(catalogService.getActiveProducts(pageable));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(catalogService.getActiveProducts(pageable, categoryId, q));
     }
 
     @GetMapping("/products/{slug}")

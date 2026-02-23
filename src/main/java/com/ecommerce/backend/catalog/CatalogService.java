@@ -17,11 +17,21 @@ public class CatalogService {
     private final CategoryRepository categoryRepository;
     private final ProductVariantRepository variantRepository ;
 
-    public Page<ProductResponse> getActiveProducts (Pageable pageable){
+    public Page<ProductResponse> getActiveProducts(Pageable pageable, UUID categoryId, String q){
+        if (categoryId != null) {
+            return productRepository
+                    .findByCategoryIdAndStatus(categoryId, Product.ProductStatus.ACTIVE, pageable)
+                    .map(this::toProductResponse);
+        }
+        if (q != null && !q.isBlank()){
+            return productRepository
+                    .findByStatusAndNameContainingIgnoreCase(Product.ProductStatus.ACTIVE, q, pageable)
+                    .map(this::toProductResponse);
 
-        return
-                productRepository.findByStatus(Product.ProductStatus.ACTIVE , pageable)
-                        .map(this ::toProductResponse);
+        }
+        return productRepository
+                .findByStatus(Product.ProductStatus.ACTIVE, pageable)
+                .map(this::toProductResponse);
     }
 
     public ProductResponse getProductBySlug (String slug ){
@@ -67,6 +77,33 @@ public class CatalogService {
 
         return toVariantResponse(variantRepository.save(variant));
     }
+    public ProductResponse updateProductStatus(UUID productId, Product.ProductStatus status){
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+        product.setStatus(status);
+        return toProductResponse(productRepository.save(product));
+
+    }
+
+    public Category createCategory(CreateCategoryRequest request){
+        if (categoryRepository.existsBySlug(request.getSlug())) {
+            throw new IllegalArgumentException("Slug already in use: " + request.getSlug());
+        }
+
+        Category category = Category.builder()
+                .name(request.getName())
+                .slug(request.getSlug())
+                .build();
+
+        if (request.getParentId() != null) {
+
+            Category parent = categoryRepository.findById(request.getParentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Parent category not found"));
+            category.setParent(parent);
+        }
+
+        return categoryRepository.save(category);
+    }
 
     public List<Category>getCategories (){
         return categoryRepository.findAll() ;
@@ -95,5 +132,7 @@ public class CatalogService {
                 .isActive(variant.isActive())
                 .build();
     }
+
+
 
 }
