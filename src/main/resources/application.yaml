@@ -5,8 +5,8 @@ spring:
   # Database
   datasource:
     url: jdbc:postgresql://localhost:5432/ecommerce_xdb
-    username: postgres
-    password: root
+    username: ecommerce_user
+    password: ecommerce_pass
     driver-class-name: org.postgresql.Driver
 
 
@@ -37,7 +37,7 @@ spring:
 # --- App-level config (custom) ---
 app:
   jwt:
-    secret: "change-me-to-a-long-random-secret-in-production"
+    secret: "change-me-to-a-long-random-secret"
     expiration-ms: 86400000        # 24 hours
   inventory:
     reservation-minutes: 15
