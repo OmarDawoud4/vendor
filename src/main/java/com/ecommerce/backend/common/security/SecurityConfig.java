@@ -28,6 +28,8 @@ public class SecurityConfig {
                         //public routes
                         .requestMatchers(
                                 "/api/v1/auth/**",
+                                "/api/v1/products/**",
+                                "/api/v1/categories/**",
                                 "/internal/health",
                                 "/internal/readiness"
                         ).permitAll()
