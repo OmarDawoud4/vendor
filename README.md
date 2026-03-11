@@ -59,18 +59,6 @@ The API will be available at `http://localhost:8080`.
 
 Flyway will automatically run all database migrations on startup.
 
-## API Overview
-
-| Method | Endpoint                        | Description            | Auth Required |
-|--------|---------------------------------|------------------------|---------------|
-| POST   | `/api/auth/register`            | Create a new account   | No            |
-| POST   | `/api/auth/login`               | Log in, get JWT token  | No            |
-| GET    | `/api/catalog/products`         | Browse products        | No            |
-| GET    | `/api/catalog/categories`       | Browse categories      | No            |
-| POST   | `/api/admin/catalog/products`   | Create a product       | Admin         |
-| POST   | `/api/admin/catalog/categories` | Create a category      | Admin         |
-| GET    | `/api/cart`                     | View your cart         | Yes           |
-| POST   | `/api/cart/items`               | Add item to cart       | Yes           |
 
 ## Configuration
 
